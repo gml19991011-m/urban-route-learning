@@ -1,12 +1,9 @@
-<<<<<<< HEAD
 """
 Learning and Adaptation in Urban Route Choice
 
 A simple reinforcement-learning model of repeated route choice
 and adaptation to environmental change.
 """
-=======
->>>>>>> 6dfc8ac (Add stochastic three-route environment)
 
 import numpy as np
 
