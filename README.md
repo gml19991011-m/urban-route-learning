@@ -14,10 +14,9 @@ The broader aim is to explore how observable differences in route-choice behavio
 
 This project focuses on several simple questions:
 
-* How can repeated travel-time feedback lead to stable route preferences?
-* How does an agent adapt when previously favourable route conditions change?
-* How does learning rate influence the speed and stability of behavioural adaptation?
-* Can latent learning parameters eventually be inferred from observed route-choice behaviour?
+How does an agent learn to prefer more advantageous routes through repeated travel-time feedback?
+How does the agent adapt when a previously preferred route becomes unavailable or substantially less favourable?
+How does the learning rate influence the speed and stability of adaptation following environmental change?
 
 ## Initial Environment
 
