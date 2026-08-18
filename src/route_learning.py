@@ -32,14 +32,20 @@ sd_time = {
 rng = np.random.default_rng(42)
 
 
-# Simulate one travel experience for each route
+# Simulate repeated travel experiences for each route
+n_trials = 100
+
 for route in routes:
 
-    travel_time = rng.normal(
+    travel_times = rng.normal(
         mean_time[route],
-        sd_time[route]
+        sd_time[route],
+        size=n_trials
     )
 
-    print(
-        f"Route {route}: {travel_time:.2f} minutes"
-    )
+    observed_mean = np.mean(travel_times)
+    observed_sd = np.std(travel_times)
+
+    print(f"Route {route}")
+    print(f"  Mean travel time: {observed_mean:.2f} minutes")
+    print(f"  Standard deviation: {observed_sd:.2f} minutes")
