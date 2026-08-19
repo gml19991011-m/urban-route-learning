@@ -369,6 +369,87 @@ This demonstrates how differences in a latent learning parameter can produce dif
 
 ---
 
+## 5. Likelihood-Based Parameter Recovery
+
+The simulations above examine the forward problem: how predefined learning parameters generate adaptive route-choice behaviour.
+
+As a minimal demonstration of the reverse problem, I also tested whether latent learning parameters could be estimated from observed synthetic behaviour.
+
+A synthetic participant was first simulated using known parameters:
+
+\[
+\alpha_{\text{true}} = 0.30,
+\qquad
+\beta_{\text{true}} = 0.40
+\]
+
+The resulting dataset contained only observable trial-level information, including route choices and experienced rewards. During model fitting, the generating values of \(\alpha\) and \(\beta\) were treated as unknown.
+
+A grid-search maximum-likelihood procedure then evaluated candidate combinations of learning rate and inverse temperature. For each candidate parameter pair, the model replayed the participant's observed choices and outcomes and calculated the probability assigned to each observed choice.
+
+Model fit was evaluated using negative log-likelihood:
+
+\[
+NLL
+=
+-\sum_t
+\log P(a_t)
+\]
+
+where \(P(a_t)\) is the model-predicted probability of the route actually chosen on trial \(t\).
+
+Lower negative log-likelihood therefore indicates that a candidate parameter combination provides a better explanation of the observed behavioural sequence.
+
+The best-fitting parameters were:
+
+\[
+\hat{\alpha} = 0.28,
+\qquad
+\hat{\beta} = 0.38
+\]
+
+compared with the generating values:
+
+\[
+\alpha_{\text{true}} = 0.30,
+\qquad
+\beta_{\text{true}} = 0.40
+\]
+
+![Likelihood-based parameter recovery](figures/parameter_recovery_surface.png)
+
+*Negative log-likelihood across candidate learning-rate (alpha) and inverse-temperature (beta) values. The cross marks the parameters used to generate the synthetic behaviour (alpha = 0.30, beta = 0.40), while the circle marks the maximum-likelihood estimates recovered from the observed choices and outcomes (alpha = 0.28, beta = 0.38). Lower negative log-likelihood indicates better model fit.*
+
+The recovered values were close to those used to generate the synthetic behavioural data:
+
+\[
+|\hat{\alpha}-\alpha_{\text{true}}| = 0.02
+\]
+
+\[
+|\hat{\beta}-\beta_{\text{true}}| = 0.02
+\]
+
+This provides a simple proof of concept for moving from forward simulation:
+
+\[
+\text{latent parameters}
+\rightarrow
+\text{behaviour}
+\]
+
+to likelihood-based inference:
+
+\[
+\text{observed behaviour}
+\rightarrow
+\text{estimated latent parameters}
+\]
+
+This analysis uses a single synthetic participant rather than empirical human data. It is therefore intended as a minimal demonstration of likelihood-based parameter estimation, rather than evidence that these parameters are fully identifiable in real behavioural datasets.
+
+---
+
 # Interpretation
 
 The model demonstrates a simple computational mechanism through which behavioural adaptation can emerge from repeated experience.
