@@ -301,127 +301,71 @@ They should not be interpreted as empirical confidence intervals estimated from 
 
 # Results
 
-## 1. Repeated Feedback Produces Stable Route Preferences
+## 1. Route Preference Emerges Through Repeated Feedback
 
-Across 500 independently simulated agents, Route A becomes increasingly preferred during the first 100 trials.
+To reduce dependence on a single stochastic trajectory, the main analysis was repeated across **500 independently simulated agents**.
 
-This occurs because repeated travel-time feedback gradually increases the learned value of Route A relative to Routes B and C.
+Across simulations, Route A gradually becomes the preferred option during the first 100 trials, reflecting its shorter expected travel time.
 
 ![Aggregate route-choice probabilities](figures/aggregate_choice_probabilities_ci.png)
 
-The solid curves show mean route-choice probabilities across simulated agents.
+Solid lines show the mean choice probability across simulated agents, and shaded regions show 95% confidence intervals.
 
-The shaded regions represent 95% confidence intervals.
+Before the disruption, the population-level pattern is:
 
-The pre-disruption period therefore demonstrates:
-
-**initial exploration → value learning → increasing Route A preference → behavioural stabilisation**
+**exploration → learning → preference stabilisation**
 
 ---
 
-## 2. Environmental Disruption Produces Behavioural Adaptation
+## 2. Behaviour Adapts After Environmental Disruption
 
-At Trial 101, Route A changes from an average travel time of 20 minutes to 35 minutes.
+From Trial 101 onward, the mean travel time of Route A increases from:
 
-The simulated agents are not explicitly informed that the environment has changed.
+\[
+20 \text{ min} \rightarrow 35 \text{ min}
+\]
 
-Instead, adaptation occurs through experience.
+The agents are not explicitly informed that the environment has changed. Instead, unexpectedly poor outcomes generate negative prediction errors, which progressively reduce the learned value of Route A.
 
-When an agent chooses Route A after the disruption, the unexpectedly poor travel-time outcome generates a negative prediction error.
+As Route A becomes less attractive, Route B gradually becomes the preferred alternative.
 
-This decreases the learned value of Route A.
+The aggregate behavioural sequence is therefore:
 
-As (Q_A) decreases, the softmax probability of selecting Route A also decreases.
-
-Route B, whose average travel time remains 24 minutes, gradually becomes the preferred alternative.
-
-The behavioural sequence is therefore:
-
-**stable preference → unexpected poor outcomes → negative prediction errors → value updating → reduced Route A choice → increased Route B choice → new stabilisation**
+**stable preference → disruption → prediction error → value updating → behavioural adaptation → new stabilisation**
 
 ---
 
-## 3. Learned Q-Values Track Changes in Route Conditions
+## 3. Learned Route Values Change With Experience
 
-The aggregate Q-value trajectories show how the latent learned values underlying route choice evolve over time.
+The underlying learned Q-values show how internal route-value estimates evolve across the same 500 simulated agents.
 
 ![Aggregate Q-values](figures/aggregate_q_values_ci.png)
 
-Before the disruption, the expected ordering becomes approximately:
+Before the disruption, Route A develops the highest learned value.
 
-[
-Q_A>Q_B>Q_C
-]
+After the disruption, its value progressively decreases as agents experience poorer outcomes, while Route B eventually becomes the highest-valued alternative.
 
-reflecting the fact that Route A offers the highest expected reward.
-
-After Route A becomes substantially slower, its learned value progressively decreases.
-
-The ordering eventually changes so that Route B has the highest learned value.
-
-The behavioural shift observed in the route-choice probability figure can therefore be explained by an underlying change in learned route values.
+This illustrates how changes in latent learned values can generate observable changes in route-choice behaviour.
 
 ---
 
-## 4. Learning Rate Influences Adaptation Speed
+## 4. Learning Rate Influences Adaptation
 
-To examine how latent learning parameters influence behavioural adaptation, additional simulations compare three learning rates:
+To examine how learning dynamics affect adaptation, the model was additionally simulated using three learning rates:
 
-[
-\alpha=0.1,\quad0.3,\quad0.7
-]
+\[
+\alpha = 0.1,\quad 0.3,\quad 0.7
+\]
 
-For each learning-rate condition:
-
-[
-N=500
-]
-
-independent agents are simulated.
-
-The primary outcome is the probability of choosing Route B, which becomes the most advantageous route after the disruption.
+For each learning-rate condition, **500 independent agents** were simulated.
 
 ![Learning-rate comparison](figures/learning_rate_comparison_ci.png)
 
-Higher learning rates allow recent prediction errors to exert a stronger influence on Q-values.
+The figure shows the mean probability of choosing Route B, which becomes the best available route after Route A deteriorates.
 
-As a result, agents with higher (\alpha) values generally adjust their route preferences more rapidly following the disruption.
+Higher learning rates generally allow behaviour to respond more rapidly to recent prediction errors, whereas lower learning rates produce more gradual updating.
 
-Lower learning rates preserve previous experience more strongly and therefore produce slower adaptation.
-
-This demonstrates how the same environmental change can generate different behavioural trajectories depending on latent learning parameters.
-
----
-
-## Illustrative Single-Agent Dynamics
-
-The aggregate simulations above represent the main results.
-
-Single-agent figures are retained to illustrate the underlying trial-by-trial mechanisms.
-
-### Route-Choice Probabilities
-
-![Single-agent route-choice probabilities](figures/route_choice_probabilities.png)
-
-The agent gradually develops a preference for Route A before the disruption and subsequently shifts preference toward Route B.
-
----
-
-### Learned Q-Values
-
-![Single-agent Q-values](figures/q_values_across_trials.png)
-
-The Q-value trajectories show how internal route-value estimates evolve as new outcomes are experienced.
-
----
-
-### Prediction Errors
-
-![Prediction errors](figures/prediction_errors_across_trials.png)
-
-Prediction errors fluctuate around zero because travel times are stochastic.
-
-Large negative prediction errors can occur when the agent experiences Route A after the disruption, providing the learning signal that drives downward updating of (Q_A).
+This demonstrates how differences in a latent learning parameter can produce different behavioural adaptation trajectories under the same environmental change.
 
 ---
 
