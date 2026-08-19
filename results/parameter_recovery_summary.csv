@@ -1,0 +1,2 @@
+true_alpha,recovered_alpha,alpha_absolute_error,true_beta,recovered_beta,beta_absolute_error,best_negative_log_likelihood
+0.3,0.28,0.019999999999999962,0.4,0.38,0.020000000000000018,118.47835840918196
