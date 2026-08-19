@@ -6,6 +6,7 @@ and adaptation to environmental change.
 """
 
 import numpy as np
+import pandas as pd
 
 
 # Define the available routes
@@ -32,39 +33,118 @@ sd_time = {
 rng = np.random.default_rng(42)
 
 
-# # Simulate repeated travel experiences for each route
-# n_trials = 100
-#
-# for route in routes:
-#
-#     travel_times = rng.normal(
-#         mean_time[route],
-#         sd_time[route],
-#         size=n_trials
-#     )
-#
-#     observed_mean = np.mean(travel_times)
-#     observed_sd = np.std(travel_times)
-#
-#     print(f"Route {route}")
-#     print(f"  Mean travel time: {observed_mean:.2f} minutes")
-#     print(f"  Standard deviation: {observed_sd:.2f} minutes")
+# Initial learned value for each route
+Q = {
+    "A": -25.0,
+    "B": -25.0,
+    "C": -25.0
+}
 
 
-# Simulate an agent making repeated route choices
-n_trials = 20
+# Learning rate
+alpha = 0.3
+
+
+# Inverse temperature for softmax choice
+beta = 0.3
+
+
+def softmax(values, inverse_temp):
+    values = np.array(values)
+
+    exp_values = np.exp(
+        inverse_temp * (values - np.max(values))
+    )
+
+    return exp_values / exp_values.sum()
+
+
+# Number of repeated route choices
+n_trials = 200
+
+
+# Route A becomes slower after trial 100
+disruption_trial = 100
+
+
+# Store trial-by-trial simulation results
+records = []
+
 
 for trial in range(n_trials):
 
-    choice = rng.choice(routes)
+    # Current learned values
+    q_values = [Q[route] for route in routes]
 
+    # Convert Q-values into choice probabilities
+    probabilities = softmax(
+        q_values,
+        beta
+    )
+
+    # Choose a route according to softmax probabilities
+    choice = rng.choice(
+        routes,
+        p=probabilities
+    )
+
+    # Environmental disruption:
+    # Route A becomes slower from Trial 101 onward
+    if trial >= disruption_trial and choice == "A":
+        current_mean_time = 35
+    else:
+        current_mean_time = mean_time[choice]
+
+    # Experience travel time
     travel_time = rng.normal(
-        mean_time[choice],
+        current_mean_time,
         sd_time[choice]
     )
 
+    # Shorter travel time = higher reward
+    reward = -travel_time
+
+    # Prediction error
+    prediction_error = reward - Q[choice]
+
+    # Update the value of the chosen route
+    Q[choice] = (
+        Q[choice]
+        + alpha * prediction_error
+    )
+
+    # Save this trial
+    records.append({
+        "trial": trial + 1,
+        "choice": choice,
+        "travel_time": travel_time,
+        "reward": reward,
+        "prediction_error": prediction_error,
+        "P_A": probabilities[0],
+        "P_B": probabilities[1],
+        "P_C": probabilities[2],
+        "Q_A": Q["A"],
+        "Q_B": Q["B"],
+        "Q_C": Q["C"]
+    })
+
     print(
         f"Trial {trial + 1}: "
+        f"P_A = {probabilities[0]:.2f}, "
+        f"P_B = {probabilities[1]:.2f}, "
+        f"P_C = {probabilities[2]:.2f} | "
         f"Route {choice}, "
-        f"{travel_time:.2f} minutes"
+        f"{travel_time:.2f} minutes | "
+        f"Q_A = {Q['A']:.2f}, "
+        f"Q_B = {Q['B']:.2f}, "
+        f"Q_C = {Q['C']:.2f}"
     )
+
+
+# Convert all saved trials into a pandas DataFrame
+df = pd.DataFrame(records)
+
+
+# Display the first five rows
+print("\nFirst five rows of the simulation data:")
+print(df.head())
