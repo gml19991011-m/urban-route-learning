@@ -206,3 +206,83 @@ plt.savefig(
     figures_dir / "route_choice_probabilities.png",
     dpi=300
 )
+
+# Plot learned Q-values across trials
+plt.figure(figsize=(10, 5))
+
+plt.plot(
+    df["trial"],
+    df["Q_A"],
+    label="Route A"
+)
+
+plt.plot(
+    df["trial"],
+    df["Q_B"],
+    label="Route B"
+)
+
+plt.plot(
+    df["trial"],
+    df["Q_C"],
+    label="Route C"
+)
+
+# Mark the disruption between Trial 100 and Trial 101
+plt.axvline(
+    x=100.5,
+    linestyle="--",
+    label="Route A disruption"
+)
+
+plt.xlabel("Trial")
+plt.ylabel("Learned Q-value")
+plt.title("Learned Route Values Across Trials")
+
+plt.legend()
+plt.tight_layout()
+
+# Save figure
+plt.savefig(
+    figures_dir / "q_values_across_trials.png",
+    dpi=300
+)
+
+plt.close()
+
+
+# Plot prediction errors across trials
+plt.figure(figsize=(10, 5))
+
+plt.plot(
+    df["trial"],
+    df["prediction_error"]
+)
+
+# Zero prediction-error reference line
+plt.axhline(
+    y=0,
+    linestyle="--"
+)
+
+# Mark the disruption between Trial 100 and Trial 101
+plt.axvline(
+    x=100.5,
+    linestyle="--",
+    label="Route A disruption"
+)
+
+plt.xlabel("Trial")
+plt.ylabel("Prediction error")
+plt.title("Prediction Errors Across Trials")
+
+plt.legend()
+plt.tight_layout()
+
+# Save figure
+plt.savefig(
+    figures_dir / "prediction_errors_across_trials.png",
+    dpi=300
+)
+
+plt.close()
