@@ -7,6 +7,9 @@ and adaptation to environmental change.
 
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
+
+from pathlib import Path
 
 
 # Define the available routes
@@ -148,3 +151,58 @@ df = pd.DataFrame(records)
 # Display the first five rows
 print("\nFirst five rows of the simulation data:")
 print(df.head())
+
+
+# Define project directories
+project_root = Path(__file__).resolve().parents[1]
+figures_dir = project_root / "figures"
+results_dir = project_root / "results"
+
+# Save simulation data
+df.to_csv(
+    results_dir / "simulation_results.csv",
+    index=False
+)
+
+
+# Plot route choice probabilities across trials
+plt.figure(figsize=(10, 5))
+
+plt.plot(
+    df["trial"],
+    df["P_A"],
+    label="Route A"
+)
+
+plt.plot(
+    df["trial"],
+    df["P_B"],
+    label="Route B"
+)
+
+plt.plot(
+    df["trial"],
+    df["P_C"],
+    label="Route C"
+)
+
+# Mark the disruption between Trial 100 and Trial 101
+plt.axvline(
+    x=100.5,
+    linestyle="--",
+    label="Route A disruption"
+)
+
+plt.xlabel("Trial")
+plt.ylabel("Choice probability")
+plt.title("Route Choice Probabilities Across Trials")
+
+plt.ylim(0, 1)
+plt.legend()
+plt.tight_layout()
+
+# Save figure
+plt.savefig(
+    figures_dir / "route_choice_probabilities.png",
+    dpi=300
+)
