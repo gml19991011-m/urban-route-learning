@@ -74,9 +74,9 @@ Reward
 
 Shorter travel times are treated as better outcomes.
 
-Reward is therefore defined as:
+Reward is defined as:
 
-r_t=-\text{travel time}_t
+r_t = -\text{travel time}_t
 
 Because reward is the negative of travel time, shorter journeys correspond to larger, less negative rewards.
 
@@ -96,7 +96,7 @@ For each route, the agent maintains a learned value $Q(a)$.
 
 At the start of the simulation:
 
-Q_A=Q_B=Q_C=-25
+Q_A = Q_B = Q_C = -25
 
 This means that the agent initially has no preference among the three routes and assumes that all have approximately similar value.
 
@@ -108,7 +108,7 @@ After choosing a route and experiencing its actual travel time, the agent compar
 
 The prediction error is:
 
-\delta_t=r_t-Q_t(a_t)
+\delta_t = r_t - Q_t(a_t)
 
 where:
 
@@ -118,21 +118,19 @@ $Q_t(a_t)$ is the current expected value of the chosen route,
 
 $\delta_t$ is the prediction error.
 
-A positive prediction error means that the outcome was better than expected.
-
-A negative prediction error means that the outcome was worse than expected.
+A positive prediction error means that the outcome was better than expected. A negative prediction error means that the outcome was worse than expected.
 
 For example, if the agent expects Route A to have:
 
-Q_A=-25
+Q_A = -25
 
 but experiences a 15-minute journey:
 
-r=-15
+r = -15
 
 then:
 
-\delta=-15-(-25)=10
+\delta = -15 - (-25) = 10
 
 The positive prediction error indicates that Route A performed better than expected.
 
@@ -140,53 +138,33 @@ Value Updating
 
 The learned value of the chosen route is updated according to:
 
-Q_{t+1}(a_t)
-=
-Q_t(a_t)
-+
-\alpha
-\left[
-r_t-Q_t(a_t)
-\right]
+Q_{t+1}(a_t) = Q_t(a_t) + \alpha \left[r_t - Q_t(a_t)\right]
 
 where $\alpha$ is the learning rate.
 
-The learning rate determines how strongly a new experience changes the agent's existing expectation.
-
-A low learning rate produces gradual updating and stronger dependence on accumulated experience.
-
-A high learning rate gives greater weight to recent outcomes and therefore allows faster responses to environmental change.
+A low learning rate produces gradual updating and stronger dependence on accumulated experience. A high learning rate gives greater weight to recent outcomes and therefore allows faster responses to environmental change.
 
 The default simulation uses:
 
-\alpha=0.3
+\alpha = 0.3
 
 Softmax Choice
 
-Learning alone does not determine behaviour. The learned Q-values must also be translated into route choices.
+The learned Q-values are translated into route choices using a softmax rule:
 
-The model therefore uses a softmax choice rule:
-
-P(a)
-=
-\frac{e^{\beta Q(a)}}
-{\sum_j e^{\beta Q(j)}}
+P(a) = \frac{e^{\beta Q(a)}}{\sum_j e^{\beta Q(j)}}
 
 where $\beta$ is the inverse temperature parameter.
 
 Routes with higher learned Q-values are more likely to be selected, but lower-valued routes still retain some probability of being explored.
 
-Higher values of $\beta$ make choices more strongly concentrated on the currently preferred route.
-
-Lower values of $\beta$ produce more exploratory behaviour.
+Higher values of $\beta$ make choices more strongly concentrated on the currently preferred route. Lower values of $\beta$ produce more exploratory behaviour.
 
 The default model uses:
 
-\beta=0.3
+\beta = 0.3
 
 Computational Loop
-
-The full model can be summarised as:
 
 Current Q-values
       ↓
@@ -212,33 +190,21 @@ The first version of the project implements an illustrative single-agent simulat
 
 src/route_learning.py
 
-The agent completes:
+The agent completes 200 repeated route-choice trials.
 
-200
+This version is useful for inspecting trial-by-trial dynamics, including route-choice probabilities, learned Q-values, prediction errors, and adaptation following environmental disruption.
 
-repeated route-choice trials.
-
-This version is useful for inspecting trial-by-trial dynamics, including:
-
-route-choice probabilities,
-
-learned Q-values,
-
-prediction errors,
-
-adaptation following environmental disruption.
-
-The single-agent results are intentionally retained because they make the internal learning process easy to inspect.
+The single-agent implementation is retained as an interpretable demonstration of the underlying trial-by-trial learning mechanism.
 
 Aggregate Simulation
 
-Because a single simulated trajectory can be strongly influenced by stochastic travel-time outcomes, the project also includes a population-level simulation:
+Because a single simulated trajectory can be strongly influenced by stochastic travel-time outcomes, the main analysis also includes a population-level simulation:
 
 src/aggregate_simulation.py
 
-The main aggregate analysis runs:
+The aggregate analysis runs:
 
-N=500
+N = 500
 
 independent simulated agents.
 
@@ -270,17 +236,13 @@ mean learned Q-values,
 
 Confidence intervals are calculated as:
 
-\text{mean}
-\pm
-1.96\times SEM
+\text{mean} \pm 1.96 \times SEM
 
 where:
 
-SEM=\frac{SD}{\sqrt{N}}
+SEM = \frac{SD}{\sqrt{N}}
 
-The shaded confidence intervals shown in the figures therefore quantify uncertainty in the mean trajectories across simulated agents.
-
-They should not be interpreted as empirical confidence intervals estimated from human participants.
+The shaded confidence intervals quantify uncertainty in the mean trajectories across simulated agents. They should not be interpreted as empirical confidence intervals estimated from human participants.
 
 Results
 
@@ -292,7 +254,7 @@ Across simulations, Route A gradually becomes the preferred option during the fi
 
 
 
-Mean route-choice probabilities across 500 independently simulated agents. Shaded regions indicate 95% confidence intervals across simulations, and the vertical dashed line marks the Route A disruption.
+Figure 1. Mean route-choice probabilities across 500 independently simulated agents. Shaded regions indicate 95% confidence intervals across simulations, and the vertical dashed line marks the Route A disruption.
 
 Before the disruption, the population-level pattern is:
 
@@ -302,11 +264,11 @@ exploration → learning → preference stabilisation
 
 From Trial 101 onward, the mean travel time of Route A increases from:
 
-20 \text{ min} \rightarrow 35 \text{ min}
+20\text{ min} \rightarrow 35\text{ min}
 
 The agents are not explicitly informed that the environment has changed. Instead, unexpectedly poor outcomes generate negative prediction errors, which progressively reduce the learned value of Route A.
 
-As Route A becomes less attractive, Route B gradually becomes the preferred alternative.
+As $Q_A$ decreases, the softmax probability of selecting Route A also decreases. Route B, whose average travel time remains 24 minutes, gradually becomes the preferred alternative.
 
 The aggregate behavioural sequence is therefore:
 
@@ -318,27 +280,27 @@ The underlying learned Q-values show how internal route-value estimates evolve a
 
 
 
-Mean learned Q-values across 500 independently simulated agents, with shaded 95% confidence intervals.
+Figure 2. Mean learned Q-values across 500 independently simulated agents, with shaded 95% confidence intervals. After Route A deteriorates, its learned value decreases while Route B becomes the highest-valued alternative.
 
-Before the disruption, Route A develops the highest learned value.
+Before the disruption, Route A develops the highest learned value:
+
+Q_A > Q_B > Q_C
 
 After the disruption, its value progressively decreases as agents experience poorer outcomes, while Route B eventually becomes the highest-valued alternative.
 
-This illustrates how changes in latent learned values can generate observable changes in route-choice behaviour.
+The behavioural shift observed in route-choice probabilities can therefore be explained by an underlying change in learned route values.
 
 4. Learning Rate Influences Adaptation
 
 To examine how learning dynamics affect adaptation, the model was additionally simulated using three learning rates:
 
-\alpha = 0.1,\quad 0.3,\quad 0.7
+\alpha = 0.1,\qquad \alpha = 0.3,\qquad \alpha = 0.7
 
 For each learning-rate condition, 500 independent agents were simulated.
 
 
 
-Mean probability of choosing Route B under three learning-rate conditions. Route B becomes the most advantageous route after the disruption. Shaded regions indicate 95% confidence intervals across simulated agents.
-
-The figure shows the mean probability of choosing Route B, which becomes the best available route after Route A deteriorates.
+Figure 3. Mean probability of choosing Route B under three learning-rate conditions. Route B becomes the most advantageous route after the disruption. Shaded regions indicate 95% confidence intervals across simulated agents.
 
 Higher learning rates generally allow behaviour to respond more rapidly to recent prediction errors, whereas lower learning rates produce more gradual updating.
 
@@ -352,9 +314,7 @@ As a minimal demonstration of the reverse problem, I also tested whether latent 
 
 A synthetic participant was first simulated using known parameters:
 
-\alpha_{\text{true}} = 0.30,
-\qquad
-\beta_{\text{true}} = 0.40
+\alpha_{\text{true}} = 0.30,\qquad \beta_{\text{true}} = 0.40
 
 The resulting dataset contained only observable trial-level information, including route choices and experienced rewards. During model fitting, the generating values of $\alpha$ and $\beta$ were treated as unknown.
 
@@ -362,30 +322,23 @@ A grid-search maximum-likelihood procedure then evaluated candidate combinations
 
 Model fit was evaluated using negative log-likelihood:
 
-NLL
-=
--\sum_t
-\log P(a_t)
+NLL = -\sum_t \log P(a_t)
 
 where $P(a_t)$ is the model-predicted probability of the route actually chosen on trial $t$.
 
-Lower negative log-likelihood therefore indicates that a candidate parameter combination provides a better explanation of the observed behavioural sequence.
+Lower negative log-likelihood indicates that a candidate parameter combination provides a better explanation of the observed behavioural sequence.
 
 The best-fitting parameters were:
 
-\hat{\alpha} = 0.28,
-\qquad
-\hat{\beta} = 0.38
+\hat{\alpha} = 0.28,\qquad \hat{\beta} = 0.38
 
 compared with the generating values:
 
-\alpha_{\text{true}} = 0.30,
-\qquad
-\beta_{\text{true}} = 0.40
+\alpha_{\text{true}} = 0.30,\qquad \beta_{\text{true}} = 0.40
 
 
 
-Negative log-likelihood across candidate learning-rate (alpha) and inverse-temperature (beta) values. The cross marks the parameters used to generate the synthetic behaviour (alpha = 0.30, beta = 0.40), while the circle marks the maximum-likelihood estimates recovered from the observed choices and outcomes (alpha = 0.28, beta = 0.38). Lower negative log-likelihood indicates better model fit.
+Figure 4. Negative log-likelihood across candidate learning-rate (alpha) and inverse-temperature (beta) values. The cross marks the parameters used to generate the synthetic behaviour (alpha = 0.30, beta = 0.40), while the circle marks the maximum-likelihood estimates recovered from the observed choices and outcomes (alpha = 0.28, beta = 0.38). Lower negative log-likelihood indicates better model fit.
 
 The recovered values were close to those used to generate the synthetic behavioural data:
 
@@ -395,15 +348,11 @@ The recovered values were close to those used to generate the synthetic behaviou
 
 This provides a simple proof of concept for moving from forward simulation:
 
-\text{latent parameters}
-\rightarrow
-\text{behaviour}
+\text{latent parameters} \rightarrow \text{behaviour}
 
 to likelihood-based inference:
 
-\text{observed behaviour}
-\rightarrow
-\text{estimated latent parameters}
+\text{observed behaviour} \rightarrow \text{estimated latent parameters}
 
 This analysis uses a single synthetic participant rather than empirical human data. It is therefore intended as a minimal demonstration of likelihood-based parameter estimation, rather than evidence that these parameters are fully identifiable in real behavioural datasets.
 
@@ -425,25 +374,19 @@ The main causal sequence is:
 
 Before the disruption, repeated feedback allows the agent to learn that Route A is relatively advantageous.
 
-When the environment changes, previously learned expectations become inaccurate.
-
-Unexpected outcomes generate prediction errors, which update latent route values and progressively alter future choices.
+When the environment changes, previously learned expectations become inaccurate. Unexpected outcomes generate prediction errors, which update latent route values and progressively alter future choices.
 
 The learning-rate comparison further illustrates how differences in latent learning parameters can produce different adaptation trajectories even when agents experience the same underlying environment.
 
 The parameter-recovery analysis extends this logic in the opposite direction by demonstrating, using synthetic data, how observed choices and outcomes can be used to estimate latent learning parameters through likelihood-based fitting.
 
-Together, the project therefore explores both:
+Together, the project explores both:
 
-\text{parameters}
-\rightarrow
-\text{behaviour}
+\text{parameters} \rightarrow \text{behaviour}
 
 and:
 
-\text{behaviour}
-\rightarrow
-\text{estimated parameters}
+\text{behaviour} \rightarrow \text{estimated parameters}
 
 Repository Structure
 
@@ -493,13 +436,7 @@ Run the likelihood-based parameter-recovery demonstration:
 
 python src/parameter_recovery.py
 
-The scripts automatically save generated figures to:
-
-figures/
-
-and simulation summaries to:
-
-results/
+The scripts automatically save generated figures to figures/ and simulation summaries to results/.
 
 Dependencies
 
